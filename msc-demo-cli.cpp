@@ -323,98 +323,113 @@ void msc_demo_cli_init()
     printf("date=%02u/%02u/%04u time=%02u:%02u:%02u\r\n", month, day, year, hour, minute, sec);
     printf("Please use the CLI to set the date and time for file\r\ntimestamps before accessing the filesystem\r\n");
     printf("Type help for more information\r\n");
+    EmbeddedCliConfig demo_config;
 
-    cli = embeddedCliNewDefault();
+    demo_config.rxBufferSize = 64;
+    demo_config.cmdBufferSize = 64;
+    demo_config.historyBufferSize = 128;
+    demo_config.cliBuffer = NULL;
+    demo_config.cliBufferSize = 0;
+    demo_config.maxBindingCount = 16;
+    demo_config.enableAutoComplete = true;
+
+    cli = embeddedCliNew(&demo_config);
     cli->onCommand = onCommandFn;
     cli->writeChar = writeCharFn;
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "cat",
             "print the specified file",
             true,
             NULL,
             on_cat
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "cd",
             "change the current working directory",
             true,
             NULL,
             on_cd
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "get-date",
             "get the date for file timestamps",
             false,
             NULL,
             on_get_date
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "get-fattime",
             "get the date and time for file timestamps",
             false,
             NULL,
             on_get_fat_time
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "get-time",
             "get the time of day for file timestamps",
             false,
             NULL,
             on_get_time
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "ls",
             "list current directory",
             false,
             NULL,
             on_ls
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "mkdir",
             "create a new directory",
             true,
             NULL,
             on_mkdir
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "pwd",
             "print the current working directory",
             false,
             NULL,
             on_pwd
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "rm",
             "delete an unopened file or an unopened, empty directory",
             true,
             NULL,
             on_rm
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "set-date",
             "change the date for file timestamps",
             true,
             NULL,
             on_set_date
-    });
+    }));
 
-    embeddedCliAddBinding(cli, {
+    assert(embeddedCliAddBinding(cli, {
             "set-time",
             "change the time of day for file timestamps",
             true,
             NULL,
             on_set_time
-    });
+    }));
+
+    // flush out junk from the keyboard buffer
+    int c;
+    do {
+        c = getchar_timeout_us(0);
+    } while(c != PICO_ERROR_TIMEOUT);
 
     embeddedCliProcess(cli);
 }
