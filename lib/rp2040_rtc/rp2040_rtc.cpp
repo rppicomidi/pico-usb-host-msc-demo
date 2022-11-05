@@ -81,7 +81,9 @@ rppicomidi::Rp2040_rtc::Rp2040_rtc()
     // Start the RTC
     rtc_init();
     rtc_set_datetime(&t);
-    sleep_ms(10); // wait for the RTC initialization to take effect
+    // clk_sys is >2000x faster than clk_rtc, so datetime is not updated immediately when rtc_set_datetime() is called.
+    // tbe delay is up to 3 RTC clock cycles (which is 64us with the default clock settings)
+    sleep_us(64);
 }
 
 bool rppicomidi::Rp2040_rtc::set_date(uint16_t year, uint8_t month, uint8_t day)
@@ -95,6 +97,7 @@ bool rppicomidi::Rp2040_rtc::set_date(uint16_t year, uint8_t month, uint8_t day)
         t.day = day;
         t.dotw = get_day_of_the_week(year, month, day);
         rtc_set_datetime(&t);
+        sleep_us(64);
     }
     return success;
 }
@@ -109,6 +112,7 @@ bool rppicomidi::Rp2040_rtc::set_time(uint8_t hour, uint8_t min, uint8_t sec)
         t.min = min;
         t.sec = sec;
         rtc_set_datetime(&t);
+        sleep_us(64);
     }
     return success;
 }
