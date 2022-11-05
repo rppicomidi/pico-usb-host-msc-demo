@@ -337,6 +337,55 @@ static void on_mv(EmbeddedCli *cli, char *args, void *context)
     }
 }
 
+static void on_cp(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)context;
+    if (embeddedCliGetTokenCount(args) == 2) {
+        char fn1[256];
+        char fn2[256];
+        FIL fil;
+        strncpy(fn1, embeddedCliGetToken(args, 1), sizeof(fn1)-1);
+        fn1[sizeof(fn1)-1] = '\0';
+        strncpy(fn2, embeddedCliGetToken(args, 2), sizeof(fn2)-1);
+        fn2[sizeof(fn2)-1] = '\0';
+        FIL src, dest;
+        FRESULT res = f_open(&src, fn1, FA_READ);
+        if (res == FR_OK) {
+            res = f_open(&dest, fn2, FA_WRITE | FA_CREATE_NEW);
+            if (res == FR_OK) {
+                uint8_t buffer[512];
+                UINT nread = sizeof(buffer);
+                while (res == FR_OK && nread == sizeof(buffer)) {
+                    res = f_read(&src, buffer, sizeof(buffer), &nread);
+                    if (res == FR_OK) {
+                        UINT nwritten;
+                        res = f_write(&dest, buffer, nread, &nwritten);
+                    }
+                }
+                if (res == FR_OK) {
+                    printf("%s copied to %s\r\n", fn1, fn2);
+                }
+                else {
+                    printf("error %u copying %s to %s\r\n", res, fn1, fn2);
+                }
+                f_close(&src);
+                f_close(&dest);
+            }
+            else {
+                f_close(&src);
+                printf("error %u opening %s for writing\r\n", res, fn2);
+            }
+        }
+        else {
+            printf("error %u opening % for reading\r\n", res, fn1);
+        }
+    }
+    else {
+        printf("usage: cp from-file to-file\r\n");
+    }
+}
+
 void msc_demo_cli_init()
 {
     uint16_t year;
@@ -378,6 +427,14 @@ void msc_demo_cli_init()
             true,
             NULL,
             on_cd
+    }));
+
+    assert(embeddedCliAddBinding(cli, {
+            "cp",
+            "copy an unopened file to a different unopened file",
+            true,
+            NULL,
+            on_cp
     }));
 
     assert(embeddedCliAddBinding(cli, {
