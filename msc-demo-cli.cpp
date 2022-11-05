@@ -297,6 +297,7 @@ static void on_rm(EmbeddedCli *cli, char *args, void *context)
         char fn[256];
         FIL fil;
         strncpy(fn, embeddedCliGetToken(args, 1), sizeof(fn)-1);
+        fn[sizeof(fn)-1] = '\0';
         FRESULT res = f_unlink(fn);
         if (res != FR_OK) {
             printf("error %u deleting %s\r\n", res, fn);
@@ -307,6 +308,32 @@ static void on_rm(EmbeddedCli *cli, char *args, void *context)
     }
     else {
         printf("usage: rm filename\r\n");
+    }
+}
+
+static void on_mv(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)context;
+    if (embeddedCliGetTokenCount(args) == 2) {
+        char fn1[256];
+        char fn2[256];
+        FIL fil;
+        strncpy(fn1, embeddedCliGetToken(args, 1), sizeof(fn1)-1);
+        fn1[sizeof(fn1)-1] = '\0';
+        strncpy(fn2, embeddedCliGetToken(args, 2), sizeof(fn2)-1);
+        fn2[sizeof(fn2)-1] = '\0';
+
+        FRESULT res = f_rename(fn1, fn2);
+        if (res != FR_OK) {
+            printf("error %u renaming %s to %s\r\n", res, fn1, fn2);
+        }
+        else {
+            printf("%s renamed to %s\r\n", fn1, fn2);
+        }
+    }
+    else {
+        printf("usage: mv old new\r\n");
     }
 }
 
@@ -391,6 +418,14 @@ void msc_demo_cli_init()
             true,
             NULL,
             on_mkdir
+    }));
+
+    assert(embeddedCliAddBinding(cli, {
+            "mv",
+            "rename an unopened file or an unopened, empty directory",
+            true,
+            NULL,
+            on_mv
     }));
 
     assert(embeddedCliAddBinding(cli, {
