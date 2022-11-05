@@ -256,6 +256,39 @@ static void on_cat(EmbeddedCli *cli, char *args, void *context)
     }
 }
 
+static void on_mkdir(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)context;
+    if (embeddedCliGetTokenCount(args) == 1) {
+        char dirname[256];
+        strncpy(dirname, embeddedCliGetToken(args, 1), sizeof(dirname)-1);
+        dirname[sizeof(dirname)-1] = '\0';
+        FRESULT res = f_mkdir(dirname);
+        if (res != FR_OK) {
+            printf("error %u creating directory %s\r\n", res, dirname);
+        }
+    }
+    else {
+        printf("usage: mkdir directory-name\r\n");
+    }
+}
+
+static void on_pwd(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)args;
+    (void)context;
+    char cwd[256];
+    FRESULT res = f_getcwd(cwd, sizeof(cwd));
+    if (res != FR_OK) {
+        printf("error %u reading the current working directory\r\n", res);
+    }
+    else {
+        printf("cwd=%s\r\n", cwd);
+    }
+}
+
 void msc_demo_cli_init()
 {
     uint16_t year;
@@ -320,6 +353,22 @@ void msc_demo_cli_init()
             false,
             NULL,
             on_ls
+    });
+
+    embeddedCliAddBinding(cli, {
+            "mkdir",
+            "create a new directory",
+            true,
+            NULL,
+            on_mkdir
+    });
+
+    embeddedCliAddBinding(cli, {
+            "pwd",
+            "print the current working directory",
+            false,
+            NULL,
+            on_pwd
     });
 
     embeddedCliAddBinding(cli, {
