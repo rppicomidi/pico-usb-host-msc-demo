@@ -152,7 +152,7 @@ static FRESULT scan_files(const char* path)
         for (;;) {
             res = f_readdir(&dir, &fno);                   /* Read a directory item */
             if (res != FR_OK || fno.fname[0] == 0) break;  /* Break on error or end of dir */
-            #if 0
+            #if 0 // Do not do recursive scan.
             if (fno.fattrib & AM_DIR) {                    /* It is a directory */
                 i = strlen(path);
                 sprintf(&path[i], "/%s", fno.fname);
@@ -389,7 +389,7 @@ int main()
     // Map the pins to functions
     gpio_init(LED_GPIO);
     gpio_set_dir(LED_GPIO, GPIO_OUT);
-    mmc_fat_init();
+    msc_fat_init();
     initialize_cli();
     while (1) {
         main_loop_task();
@@ -435,7 +435,7 @@ void tuh_msc_mount_cb(uint8_t dev_addr)
     printf("A MassStorage device is mounted\r\n");
 
     uint8_t pdrv = dev_addr-1;
-    mmc_fat_plug_in(pdrv);
+    msc_fat_plug_in(pdrv);
     uint8_t const lun = 0;
     tuh_msc_inquiry(dev_addr, lun, &inquiry_resp, inquiry_complete_cb);
     if ( f_mount(&fatfs[pdrv],"", 0) != FR_OK ) {
@@ -454,6 +454,6 @@ void tuh_msc_umount_cb(uint8_t dev_addr)
     uint8_t pdrv = dev_addr-1;
 
     f_mount(NULL, "", 0); // unmount disk
-    mmc_fat_unplug(pdrv);
+    msc_fat_unplug(pdrv);
 }
 
