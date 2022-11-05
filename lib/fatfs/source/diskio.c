@@ -102,6 +102,7 @@ mmc_fat_xfer_status_t mmc_fat_get_xfer_status()
 void mmc_fat_wait_transfer_complete()
 {
     while(mmc_fat_get_xfer_status() == MMC_FAT_IN_PROGRESS) {
+        main_loop_task();
     }
 }
 
@@ -145,6 +146,8 @@ DSTATUS disk_initialize (
     if (pdrv < CFG_TUH_DEVICE_MAX) {
         if ((disk_state[pdrv] & STA_NODISK) == 0) {
             disk_state[pdrv] = 0;
+            stat = 0;
+            mmc_fat_set_status(MMC_FAT_COMPLETE);
         }
     }
 
@@ -246,10 +249,38 @@ DRESULT disk_ioctl (
 {
     (void)buff;
     (void)pdrv;
-
-    if (cmd != CTRL_SYNC)
-        return RES_ERROR;
-    return RES_OK;
+    DRESULT res = RES_OK;
+    if (disk_state[pdrv] != 0) {
+        res = RES_ERROR; // not mounted
+    }
+    else {
+        switch(cmd) {
+        case CTRL_SYNC:
+            break;
+        case GET_SECTOR_COUNT:
+        {
+            LBA_t* ptr = (LBA_t*)buff;
+            *ptr = tuh_msc_get_block_count(pdrv+1, 0);
+        }
+            break;
+        case GET_SECTOR_SIZE:
+        {
+            WORD* ptr = (WORD*)buff;
+            *ptr = tuh_msc_get_block_size(pdrv+1, 0);
+        }
+            break;
+        case GET_BLOCK_SIZE:
+        {
+            DWORD* ptr = (DWORD*)buff;
+            *ptr = 1; // unknown
+        }
+            break;
+        default:
+            res = RES_ERROR;
+            break;
+        }
+    }
+    return res;
 }
 
 #endif

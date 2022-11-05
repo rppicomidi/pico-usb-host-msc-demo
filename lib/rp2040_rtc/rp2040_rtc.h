@@ -109,14 +109,6 @@ public:
     void get_time(uint8_t& hour, uint8_t& min, uint8_t& sec);
 
     /**
-     * @brief Get the 32bit date time value
-     * 
-     * @return uint32_t return the 32-bit date and time value
-     * per the Microsoft FAT specification (August 30, 2005)
-     */
-    uint32_t get_32bit_date_time();
-
-    /**
      * @brief Get the month name for the month number
      * 
      * @param month_num the month number 1-12

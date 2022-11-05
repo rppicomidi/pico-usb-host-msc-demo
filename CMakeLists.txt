@@ -15,11 +15,15 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/fatfs/source)
 
 add_executable(${target}
     pico-usb-host-msc-demo.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/lib/embedded-cli/lib/src/embedded_cli.c
 )
 
 pico_enable_stdio_uart(${target} 1)
 
-target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(
+    ${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/lib/embedded-cli/lib/include
+)
 
 target_link_libraries(${target} tinyusb_host tinyusb_board rp2040_rtc msc_fatfs pico_stdlib)
 

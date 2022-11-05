@@ -89,6 +89,8 @@ mmc_fat_xfer_status_t mmc_fat_get_xfer_status();
 void mmc_fat_wait_transfer_complete();
 
 bool mmc_fat_complete_cb(uint8_t dev_addr, msc_cbw_t const* cbw, msc_csw_t const* csw);
+
+void main_loop_task();
 #ifdef __cplusplus
 }
 #endif

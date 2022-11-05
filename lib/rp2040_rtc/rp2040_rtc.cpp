@@ -81,6 +81,7 @@ rppicomidi::Rp2040_rtc::Rp2040_rtc()
     // Start the RTC
     rtc_init();
     rtc_set_datetime(&t);
+    sleep_ms(10); // wait for the RTC initialization to take effect
 }
 
 bool rppicomidi::Rp2040_rtc::set_date(uint16_t year, uint8_t month, uint8_t day)
