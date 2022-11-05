@@ -99,6 +99,22 @@ static void on_cd(EmbeddedCli *cli, char *args, void *context)
         printf("error %u getting cwd\r\n", res);
 }
 
+static void print_fat_date(WORD wdate)
+{
+    uint16_t year = 1980 + ((wdate >> 9) & 0x7f);
+    uint16_t month = (wdate >> 5) & 0xf;
+    uint16_t day = wdate & 0x1f;
+    printf("%02u/%02u/%04u\t", month, day, year);
+}
+
+static void print_fat_time(WORD wtime)
+{
+    uint8_t hour = ((wtime >> 11) & 0x1f);
+    uint8_t min = ((wtime >> 5) & 0x3F);
+    uint8_t sec = ((wtime &0x1f)*2);
+    printf("%02u:%02u:%02u\t", hour, min, sec);
+}
+
 static FRESULT scan_files(const char* path)
 {
     FRESULT res;
@@ -122,6 +138,9 @@ static FRESULT scan_files(const char* path)
                 printf("%s/%s\r\n", path, fno.fname);
             }
             #endif
+            printf("%lu\t",fno.fsize);
+            print_fat_date(fno.fdate);
+            print_fat_time(fno.ftime);
             printf("%s%c\r\n",fno.fname, (fno.fattrib & AM_DIR) ? '/' : ' ');
         }
         f_closedir(&dir);
