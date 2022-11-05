@@ -289,6 +289,27 @@ static void on_pwd(EmbeddedCli *cli, char *args, void *context)
     }
 }
 
+static void on_rm(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)context;
+    if (embeddedCliGetTokenCount(args) == 1) {
+        char fn[256];
+        FIL fil;
+        strncpy(fn, embeddedCliGetToken(args, 1), sizeof(fn)-1);
+        FRESULT res = f_unlink(fn);
+        if (res != FR_OK) {
+            printf("error %u deleting %s\r\n", res, fn);
+        }
+        else {
+            printf("%s deleted\r\n", fn);
+        }
+    }
+    else {
+        printf("usage: rm filename\r\n");
+    }
+}
+
 void msc_demo_cli_init()
 {
     uint16_t year;
@@ -369,6 +390,14 @@ void msc_demo_cli_init()
             false,
             NULL,
             on_pwd
+    });
+
+    embeddedCliAddBinding(cli, {
+            "rm",
+            "delete an unopened file or an unopened, empty directory",
+            true,
+            NULL,
+            on_rm
     });
 
     embeddedCliAddBinding(cli, {
