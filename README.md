@@ -7,14 +7,15 @@ The command line interpreter is built on the embedded-cli project.
 
 # Build Instructions
 As of this writing, USB host bulk transfers that the Mass Storage
-Class requires are not supported for RP2040 in tinyusb. There is a
-pull request (#1434) approved but not yet merged that adds USB
-host bulk transfer request to tinyusb. Get that code like this:
+Class requires are not supported for RP2040 in the version of
+tinyusb that ships with the pico-sdk. You need the very latest
+version of tinyusb to get that. This assumes `${PICO_SDK_PATH}`
+points to your `pico-sdk` directory.
 
 ```
-cd {PICO_SDK_PATH}/lib/tinyusb
-git fetch origin pull/1434/head:test_bulk
-git checkout test_bulk
+cd ${PICO_SDK_PATH}/lib/tinyusb
+git checkout master
+git pull
 ```
 
 Get this project's source code assuming the parent directory is called
@@ -26,7 +27,7 @@ git clone https://github.com/rppicomidi/pico-usb-host-msc-demo.git
 git submodule update --recursive --init
 ```
 
-As of this writing, pull request 1434 supports double-buffered USB
+As of this writing, tinyusb for RP2040 supports double-buffered USB
 transfers in host mode. I was not able to get 512 sector reads
 to work with double buffering enabled. Reading 512 bytes at a
 time is a basic operation for the FAT File System, so double
