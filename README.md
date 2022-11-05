@@ -1,25 +1,49 @@
 # pico-usb-host-msc-demo
 A CLI-driven demo of a Raspberry Pi Pico operating as a USB Mass Storage Class Host 
 
-# Build Instructions
-Make sure your pico-sdk library has latest version of the tinyusb library that has
-pull request 1434 merged in or else the USB host bulk transfers that the Mass
-Storage Class requires won't be supported.
+This project uses the pico-sdk, the very latest tinyusb library,
+and the elm-chan fatfs file system to implement the USB Host MSC.
+The command line interpreter is built on the embedded-cli project.
 
-If the merge has not happened yet, create a temporary branch in your pico-sdk directory like this:
+# Build Instructions
+As of this writing, USB host bulk transfers that the Mass Storage
+Class requires are not supported for RP2040 in tinyusb. There is a
+pull request (#1434) approved but not yet merged that adds USB
+host bulk transfer request to tinyusb. Get that code like this:
 
 ```
-cd pico-sdk/lib/tinyusb
+cd {PICO_SDK_PATH}/lib/tinyusb
 git fetch origin pull/1434/head:test_bulk
 git checkout test_bulk
 ```
 
-Next get this source code assuming the parent directory is called `${PROJECTS}`
-and build
+Get this project's source code assuming the parent directory is called
+`${PROJECTS}`.
 
 ```
 cd ${PROJECTS}
 git clone https://github.com/rppicomidi/pico-usb-host-msc-demo.git
+git submodule update --recursive --init
+```
+
+As of this writing, pull request 1434 supports double-buffered USB
+transfers in host mode. I was not able to get 512 sector reads
+to work with double buffering enabled. Reading 512 bytes at a
+time is a basic operation for the FAT File System, so double
+buffering needs to be disabled. This project supplies a patch
+to disable double buffering.
+
+```
+cd ${PICO_SDK_PATH}/lib/tinyusb
+git apply ${PROJECTS}/msc-usb-host-msc-demo/patches/0001-disable-RP2040-USB-Host-double-buffering.patch
+```
+
+Build the software. The build will not work correctly unless
+you have already set the `PICO_SDK_PATH` environment variable
+to point to your `pico-sdk` directory
+
+```
+cd ${PROJECTS}/pico-usb-host-msc-demo
 mkdir build
 cd build
 cmake ..
@@ -27,26 +51,34 @@ make
 ```
 
 # Hardware hookup
-You will need a UART terminal connected to pins 1 and 2 of the Pico board so
-you can use the command line interpreter. You will need a microUSB to USB A
-female adapter to interface with most USB flash drives. You will also need
-to provide 5V to the Vbus pin so the Pico board will boot and to power the
-USB flash drive.
+You will need a UART terminal connected to pins 1 and 2 of the Pico
+board so you can use the command line interpreter. You will need a
+microUSB to USB A female adapter to interface with most USB flash
+drives. You will also need to provide 5V to the Vbus pin so the Pico
+board will boot and to power the USB flash drive.
 
-I use a Picoprobe board hooked to a computer to provide the UART terminal interface
-and to provide the 5V to VBus (I just hook the Vbus pins together). I also use
-it to download code to the board.
+I use a Picoprobe board hooked to a computer to provide the UART
+terminal interface and to provide the 5V to VBus (I just hook the
+Vbus pins together). I also use it to download code to the board.
 
 # Usage
-Hook up the hardware and start a terminal program. Get the code into the target Pico board.
-Make sure the board boots. The terminal should display the message
+Hook up the hardware and start a terminal program. Get the code into
+the target Pico board. Make sure the board boots. The terminal should
+display a message similar to this one. The initial date and time is
+the last build date and time.
 
 ```
-Pico USB Host Mass Storage Class Demo 
+Pico USB Host Mass Storage Class Demo
+date=11/05/2022 time=07:15:32
+Please use the CLI to set the date and time for file
+timestamps before accessing the filesystem
+Type help for more information
 ```
 
-Attach a USB flash drive to the USB A female adapter hooked to the Pico's microUSB
-connector. The terminal should display a message similar to this:
+Set the time and date so any changes to the file system have the
+correct date and time stamps. Attach a USB flash drive to the USB A
+female adapter hooked to the Pico's microUSB connector. The terminal
+should display a message similar to this:
 
 ```
 A MassStorage device is mounted
