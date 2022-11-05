@@ -252,7 +252,7 @@ static void on_cat(EmbeddedCli *cli, char *args, void *context)
         f_close(&fil);
     }
     else {
-        printf("usage: set-time hour(0-23) min(0-59) sec(0-59)\r\n");
+        printf("usage: cat filename\r\n");
     }
 }
 
