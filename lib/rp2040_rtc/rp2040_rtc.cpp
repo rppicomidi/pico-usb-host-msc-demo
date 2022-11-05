@@ -152,3 +152,10 @@ uint32_t rppicomidi::Rp2040_rtc::get_fat_date_time()
     }
     return result;
 }
+
+
+// For FatFs library
+extern "C" uint32_t get_fattime(void)
+{
+    return rppicomidi::Rp2040_rtc::instance().get_fat_date_time();
+}

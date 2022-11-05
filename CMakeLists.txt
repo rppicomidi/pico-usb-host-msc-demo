@@ -14,7 +14,8 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/rp2040_rtc)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/lib/fatfs/source)
 
 add_executable(${target}
-    pico-usb-host-msc-demo.cpp
+    pico-usb-host-msc-demo.c
+    msc-demo-cli.cpp
     ${CMAKE_CURRENT_LIST_DIR}/lib/embedded-cli/lib/src/embedded_cli.c
 )
 
