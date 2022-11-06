@@ -53,7 +53,7 @@ void msc_fat_unplug(
     BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-    if (pdrv < CFG_TUH_MSC)
+    if (pdrv < CFG_TUH_DEVICE_MAX)
         disk_state[pdrv] |= STA_NOINIT | STA_NODISK;;
 }
 
@@ -61,7 +61,7 @@ void msc_fat_plug_in(
     BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-    if (pdrv < CFG_TUH_MSC)
+    if (pdrv < CFG_TUH_DEVICE_MAX)
         disk_state[pdrv] &= ~STA_NODISK;
 }
 
@@ -70,7 +70,7 @@ bool msc_fat_is_plugged_in(
 )
 {
     bool plugged_in = false;
-    if (pdrv < CFG_TUH_MSC) {
+    if (pdrv < CFG_TUH_DEVICE_MAX) {
         plugged_in = (disk_state[pdrv] & STA_NODISK) == 0;
     }
     return plugged_in;
