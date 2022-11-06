@@ -152,12 +152,13 @@ void tuh_msc_mount_cb(uint8_t dev_addr)
 
 void tuh_msc_umount_cb(uint8_t dev_addr)
 {
+    uint8_t pdrv = dev_addr-1;
     printf("A MassStorage device is unmounted\r\n");
 
-    uint8_t pdrv = dev_addr-1;
     char path[]="0:";
     path[0]+=pdrv;
     f_mount(NULL, path, 0); // unmount disk
     msc_fat_unplug(pdrv);
+    printf("FATFS drive %u unmounted\r\n",pdrv);
 }
 

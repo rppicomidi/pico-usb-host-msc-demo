@@ -1,5 +1,11 @@
 # pico-usb-host-msc-demo
-A CLI-driven demo of a Raspberry Pi Pico operating as a USB Mass Storage Class Host 
+A CLI-driven demo of a Raspberry Pi Pico operating as a USB Mass Storage Class Host
+
+This demo supports up to 4 USB flash drives connected through a
+hub to the RP2040 USB port. The demo uses a terminal-based command
+line interpreter to access the drives. It supports only one
+logical unit per drive. Drives are identified by drive number,
+0-3.
 
 This project uses the pico-sdk, the very latest tinyusb library,
 and the elm-chan fatfs file system to implement the USB Host MSC.
