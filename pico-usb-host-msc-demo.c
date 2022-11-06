@@ -52,7 +52,7 @@ static void *midi_uart_instance;
 static uint8_t midi_dev_addr = 0;
 
 static scsi_inquiry_resp_t inquiry_resp;
-static FATFS fatfs[CFG_TUH_MSC];
+static FATFS fatfs[CFG_TUH_DEVICE_MAX];
 
 
 static void blink_led(void)
@@ -139,7 +139,9 @@ void tuh_msc_mount_cb(uint8_t dev_addr)
     msc_fat_plug_in(pdrv);
     uint8_t const lun = 0;
     tuh_msc_inquiry(dev_addr, lun, &inquiry_resp, inquiry_complete_cb);
-    if ( f_mount(&fatfs[pdrv],"", 0) != FR_OK ) {
+    char path[]="0:";
+    path[0]+=pdrv;
+    if ( f_mount(&fatfs[pdrv],path, 0) != FR_OK ) {
         printf("mount failed\r\n");
         return;
     }
@@ -153,8 +155,9 @@ void tuh_msc_umount_cb(uint8_t dev_addr)
     printf("A MassStorage device is unmounted\r\n");
 
     uint8_t pdrv = dev_addr-1;
-
-    f_mount(NULL, "", 0); // unmount disk
+    char path[]="0:";
+    path[0]+=pdrv;
+    f_mount(NULL, path, 0); // unmount disk
     msc_fat_unplug(pdrv);
 }
 

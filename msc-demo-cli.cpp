@@ -84,10 +84,14 @@ static void on_cd(EmbeddedCli *cli, char *args, void *context)
     if (argc == 0) {
         res = f_chdir(temp_cwd);
     }
-    else {
+    else if (argc == 1) {
         strncpy(temp_cwd, embeddedCliGetToken(args, 1), sizeof(temp_cwd)-1);
         temp_cwd[sizeof(temp_cwd)-1] = '\0';
         res = f_chdir(temp_cwd);
+    }
+    else {
+        printf("usage: cd <new path>\r\n");
+        return;
     }
     if (res != FR_OK) {
         printf("error %u setting cwd to %s\r\n", temp_cwd);
@@ -98,6 +102,32 @@ static void on_cd(EmbeddedCli *cli, char *args, void *context)
     else
         printf("error %u getting cwd\r\n", res);
 }
+
+static void on_chdrive(EmbeddedCli *cli, char *args, void *context)
+{
+    (void)cli;
+    (void)context;
+    uint16_t argc = embeddedCliGetTokenCount(args);
+    FRESULT res;
+    char dstr[] = "0:";
+    if (argc != 1) {
+        printf("usage chdrive drive_number(0-3)");
+    }
+    else {
+        int drive = atoi(embeddedCliGetToken(args, 1));
+        if (drive >=0 && drive <= 3) {
+            dstr[0] += drive;
+            res = f_chdrive(dstr);
+            if (res != FR_OK) {
+                printf("error %u setting drive to %d\r\n", res, drive);
+            }
+        }
+        else {
+            printf("usage chdrive drive_number(0-3)");
+        }
+    }
+}
+
 
 static void print_fat_date(WORD wdate)
 {
@@ -415,7 +445,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "cat",
-            "print the specified file",
+            "print the specified file; usage cat filename",
             true,
             NULL,
             on_cat
@@ -423,15 +453,23 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "cd",
-            "change the current working directory",
+            "change the current working directory; usage cd <new path>",
             true,
             NULL,
             on_cd
     }));
 
     assert(embeddedCliAddBinding(cli, {
+            "chdrive",
+            "change the current drive number; usage chdrive drive_number(0-3)",
+            true,
+            NULL,
+            on_chdrive
+    }));
+
+    assert(embeddedCliAddBinding(cli, {
             "cp",
-            "copy an unopened file to a different unopened file",
+            "copy an unopened file to a different unopened file; usage cp old_file new_file",
             true,
             NULL,
             on_cp
@@ -439,7 +477,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "get-date",
-            "get the date for file timestamps",
+            "get the date for file timestamps; usage get-date",
             false,
             NULL,
             on_get_date
@@ -447,7 +485,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "get-fattime",
-            "get the date and time for file timestamps",
+            "get the date and time for file timestamps; usage get-fattime",
             false,
             NULL,
             on_get_fat_time
@@ -455,7 +493,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "get-time",
-            "get the time of day for file timestamps",
+            "get the time of day for file timestamps; usage get-time",
             false,
             NULL,
             on_get_time
@@ -463,7 +501,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "ls",
-            "list current directory",
+            "list current directory; usage ls",
             false,
             NULL,
             on_ls
@@ -471,7 +509,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "mkdir",
-            "create a new directory",
+            "create a new directory; usage mkdir new_directory_name",
             true,
             NULL,
             on_mkdir
@@ -479,7 +517,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "mv",
-            "rename an unopened file or an unopened, empty directory",
+            "rename an unopened file or an unopened, empty directory; usage mv old_name new_name",
             true,
             NULL,
             on_mv
@@ -487,7 +525,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "pwd",
-            "print the current working directory",
+            "print the current working directory; usage pwd",
             false,
             NULL,
             on_pwd
@@ -495,7 +533,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "rm",
-            "delete an unopened file or an unopened, empty directory",
+            "delete an unopened file or an unopened, empty directory; usage rm name",
             true,
             NULL,
             on_rm
@@ -503,7 +541,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "set-date",
-            "change the date for file timestamps",
+            "change the date for file timestamps; usage set-date year(2022-9999) month(1-12) day(1-31)",
             true,
             NULL,
             on_set_date
@@ -511,7 +549,7 @@ void msc_demo_cli_init()
 
     assert(embeddedCliAddBinding(cli, {
             "set-time",
-            "change the time of day for file timestamps",
+            "change the time of day for file timestamps; usage set-time hour(0-23) minute(0-59) second(0-59)",
             true,
             NULL,
             on_set_time
