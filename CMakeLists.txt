@@ -25,7 +25,8 @@ target_include_directories(
     ${target} PRIVATE ${CMAKE_CURRENT_LIST_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/lib/embedded-cli/lib/include
 )
-
+target_link_options(${target} PRIVATE -Xlinker --print-memory-usage)
+target_compile_options(${target} PRIVATE -Wall -Wextra)
 target_link_libraries(${target} tinyusb_host tinyusb_board rp2040_rtc msc_fatfs pico_stdlib)
 
 pico_add_extra_outputs(${target})

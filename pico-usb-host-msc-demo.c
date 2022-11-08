@@ -42,14 +42,6 @@
 // On-board LED mapping. If no LED, set to NO_LED_GPIO
 const uint NO_LED_GPIO = 255;
 const uint LED_GPIO = 25;
-// UART selection Pin mapping. You can move these for your design if you want to
-// Make sure all these values are consistent with your choice of midi_uart
-#define MIDI_UART_NUM 1
-const uint MIDI_UART_TX_GPIO = 4;
-const uint MIDI_UART_RX_GPIO = 5;
-
-static void *midi_uart_instance;
-static uint8_t midi_dev_addr = 0;
 
 static scsi_inquiry_resp_t inquiry_resp;
 static FATFS fatfs[CFG_TUH_DEVICE_MAX];

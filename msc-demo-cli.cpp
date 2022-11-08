@@ -59,6 +59,9 @@ static void writeCharFn(EmbeddedCli *embeddedCli, char c)
 
 static void on_get_free(EmbeddedCli *cli, char *args, void *context)
 {
+    (void)cli;
+    (void)args;
+    (void)context;
     FATFS* fs;
     DWORD fre_clust, fre_sect, tot_sect;
     FRESULT res = f_getfree("", &fre_clust, &fs);
@@ -94,7 +97,7 @@ static void on_cd(EmbeddedCli *cli, char *args, void *context)
         return;
     }
     if (res != FR_OK) {
-        printf("error %u setting cwd to %s\r\n", temp_cwd);
+        printf("error %u setting cwd to %s\r\n", res, temp_cwd);
     }
     res = f_getcwd(temp_cwd, sizeof(temp_cwd));
     if (res == FR_OK)
@@ -149,7 +152,7 @@ static FRESULT scan_files(const char* path)
 {
     FRESULT res;
     DIR dir;
-    UINT i;
+    //UINT i;
     static FILINFO fno;
 
     res = f_opendir(&dir, path);                       /* Open the directory */
@@ -181,6 +184,9 @@ static FRESULT scan_files(const char* path)
 
 static void on_ls(EmbeddedCli *cli, char *args, void *context)
 {
+    (void)cli;
+    (void)args;
+    (void)context;
     FRESULT res = scan_files(".");
     if (res != FR_OK) {
         printf("Error %u listing files on drive\r\n", res);
@@ -325,7 +331,6 @@ static void on_rm(EmbeddedCli *cli, char *args, void *context)
     (void)context;
     if (embeddedCliGetTokenCount(args) == 1) {
         char fn[256];
-        FIL fil;
         strncpy(fn, embeddedCliGetToken(args, 1), sizeof(fn)-1);
         fn[sizeof(fn)-1] = '\0';
         FRESULT res = f_unlink(fn);
@@ -348,7 +353,6 @@ static void on_mv(EmbeddedCli *cli, char *args, void *context)
     if (embeddedCliGetTokenCount(args) == 2) {
         char fn1[256];
         char fn2[256];
-        FIL fil;
         strncpy(fn1, embeddedCliGetToken(args, 1), sizeof(fn1)-1);
         fn1[sizeof(fn1)-1] = '\0';
         strncpy(fn2, embeddedCliGetToken(args, 2), sizeof(fn2)-1);
@@ -374,7 +378,6 @@ static void on_cp(EmbeddedCli *cli, char *args, void *context)
     if (embeddedCliGetTokenCount(args) == 2) {
         char fn1[256];
         char fn2[256];
-        FIL fil;
         strncpy(fn1, embeddedCliGetToken(args, 1), sizeof(fn1)-1);
         fn1[sizeof(fn1)-1] = '\0';
         strncpy(fn2, embeddedCliGetToken(args, 2), sizeof(fn2)-1);
@@ -408,7 +411,7 @@ static void on_cp(EmbeddedCli *cli, char *args, void *context)
             }
         }
         else {
-            printf("error %u opening % for reading\r\n", res, fn1);
+            printf("error %u opening %s for reading\r\n", res, fn1);
         }
     }
     else {
@@ -489,6 +492,14 @@ void msc_demo_cli_init()
             false,
             NULL,
             on_get_fat_time
+    }));
+
+    assert(embeddedCliAddBinding(cli, {
+            "get-free",
+            "get drive free space",
+            false,
+            NULL,
+            on_get_free
     }));
 
     assert(embeddedCliAddBinding(cli, {
