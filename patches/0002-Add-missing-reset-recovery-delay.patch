@@ -1,0 +1,24 @@
+From 71138ea9b68616c5f84fc95c63997bcba3e51cf9 Mon Sep 17 00:00:00 2001
+From: rppicomidi <rppicomidi@gmail.com>
+Date: Tue, 8 Nov 2022 19:51:44 -0800
+Subject: [PATCH] Add missing reset recovery delay
+
+---
+ src/portable/raspberrypi/pio_usb/hcd_pio_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c b/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c
+index 58b153ac3..5645cd4a4 100644
+--- a/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c
++++ b/src/portable/raspberrypi/pio_usb/hcd_pio_usb.c
+@@ -76,6 +76,7 @@ void hcd_port_reset_end(uint8_t rhport)
+ {
+   uint8_t const pio_rhport = RHPORT_PIO(rhport);
+   pio_usb_host_port_reset_end(pio_rhport);
++  osal_task_delay(10); // 10ms reset recovery time (USB 2.0 spec 7.1.7.4 delta-t6)
+ }
+ 
+ bool hcd_port_connect_status(uint8_t rhport)
+-- 
+2.25.1
+

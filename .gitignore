@@ -1,4 +1,7 @@
 build/
 .vscode/.cortex-debug.peripherals.state.json
 .vscode/.cortex-debug.registers.state.json
+PIO-USB-Demo/build/
+PIO-USB-Demo/.vscode/.cortex-debug.peripherals.state.json
+PIO-USB-Demo/.vscode/.cortex-debug.registers.state.json
 
