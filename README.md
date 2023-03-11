@@ -30,6 +30,7 @@ Get this project's source code assuming the parent directory is called
 ```
 cd ${PROJECTS}
 git clone https://github.com/rppicomidi/pico-usb-host-msc-demo.git
+cd pico-usb-host-msc-demo
 git submodule update --recursive --init
 ```
 
@@ -42,7 +43,7 @@ to disable double buffering.
 
 ```
 cd ${PICO_SDK_PATH}/lib/tinyusb
-git apply ${PROJECTS}/msc-usb-host-msc-demo/patches/0001-disable-RP2040-USB-Host-double-buffering.patch
+git apply ${PROJECTS}/pico-usb-host-msc-demo/patches/0001-disable-RP2040-USB-Host-double-buffering.patch
 ```
 
 Build the software. The build will not work correctly unless
