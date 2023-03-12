@@ -34,18 +34,6 @@ cd pico-usb-host-msc-demo
 git submodule update --recursive --init
 ```
 
-As of this writing, tinyusb for RP2040 supports double-buffered USB
-transfers in host mode. I was not able to get 512 sector reads
-to work with double buffering enabled. Reading 512 bytes at a
-time is a basic operation for the FAT File System, so double
-buffering needs to be disabled. This project supplies a patch
-to disable double buffering.
-
-```
-cd ${PICO_SDK_PATH}/lib/tinyusb
-git apply ${PROJECTS}/pico-usb-host-msc-demo/patches/0001-disable-RP2040-USB-Host-double-buffering.patch
-```
-
 Build the software. The build will not work correctly unless
 you have already set the `PICO_SDK_PATH` environment variable
 to point to your `pico-sdk` directory

@@ -75,6 +75,9 @@ DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
 /* Helper functions for managing USB FAT drives in tinyusb */
 typedef enum {MSC_FAT_IN_PROGRESS, MSC_FAT_COMPLETE, MSC_FAT_ERROR} msc_fat_xfer_status_t;
 
+uint8_t msc_map_next_pdrv(uint8_t daddr);
+uint8_t msc_unmap_pdrv(uint8_t daddr);
+
 /**
  * @brief set the status to drive unplugged
  * 
@@ -132,7 +135,7 @@ void msc_fat_wait_transfer_complete();
  * @return true if transfer was successful
  * @return false if the transfer failed or there was a phase error
  */
-bool msc_fat_complete_cb(uint8_t dev_addr, msc_cbw_t const* cbw, msc_csw_t const* csw);
+bool msc_fat_complete_cb(uint8_t dev_addr, tuh_msc_complete_data_t const* cb_data);
 
 /**
  * @brief The task function for the main() function "superloop"
