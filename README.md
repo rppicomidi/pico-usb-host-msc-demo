@@ -38,6 +38,9 @@ Build the software. The build will not work correctly unless
 you have already set the `PICO_SDK_PATH` environment variable
 to point to your `pico-sdk` directory
 
+If you use a Pico W board, you must set the `PICO_BOARD` environment
+variable to `pico_w`.
+
 ```
 cd ${PROJECTS}/pico-usb-host-msc-demo
 mkdir build
@@ -45,6 +48,9 @@ cd build
 cmake ..
 make
 ```
+If you are using a Pico W board, you may see some unused parameter warnings
+in the cyw43_arch_threadsafe_background.c file. You can safely ignore these.
+The demo code is only using the `cyw43_arch` API to blink the LED.
 
 # Hardware hookup
 You will need a UART terminal connected to pins 1 and 2 of the Pico

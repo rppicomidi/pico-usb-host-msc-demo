@@ -37,7 +37,9 @@
 #include "ff.h"
 #include "diskio.h"
 #include "msc-demo-cli.h"
-
+#ifdef RPPICOMIDI_PICO_W
+#include "pico/cyw43_arch.h"
+#endif
 
 // On-board LED mapping. If no LED, set to NO_LED_GPIO
 const uint NO_LED_GPIO = 255;
@@ -62,7 +64,11 @@ static void blink_led(void)
     
     int64_t diff = absolute_time_diff_us(previous_timestamp, now);
     if (diff > 1000000) {
+#ifdef RPPICOMIDI_PICO_W
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, led_state);
+#else
         gpio_put(LED_GPIO, led_state);
+#endif
         led_state = !led_state;
         previous_timestamp = now;
     }
@@ -88,8 +94,15 @@ int main()
     tusb_init();
 
     // Map the pins to functions
+#ifdef RPPICOMIDI_PICO_W
+    if (cyw43_arch_init()) {
+        printf("WiFi init failed");
+        return -1;
+    }
+#else
     gpio_init(LED_GPIO);
     gpio_set_dir(LED_GPIO, GPIO_OUT);
+#endif
     msc_fat_init();
     msc_demo_cli_init();
     while (1) {

@@ -28,6 +28,16 @@ target_include_directories(
 target_link_options(${target} PRIVATE -Xlinker --print-memory-usage)
 target_compile_options(${target} PRIVATE -Wall -Wextra)
 target_link_libraries(${target} tinyusb_host tinyusb_board rp2040_rtc msc_fatfs pico_stdlib)
-
+if(DEFINED PICO_BOARD)
+if(${PICO_BOARD} MATCHES "pico_w")
+message("board is pico_w")
+target_compile_options(${target} PRIVATE -DRPPICOMIDI_PICO_W)
+target_link_libraries(${target} pico_cyw43_arch_none)
+else()
+message("board is pico")
+endif()
+else()
+message("board is not defined")
+endif()
 pico_add_extra_outputs(${target})
 
