@@ -11,6 +11,10 @@ This project uses the pico-sdk, the very latest tinyusb library,
 and the elm-chan fatfs file system to implement the USB Host MSC.
 The command line interpreter is built on the embedded-cli project.
 
+If you prefer to use the examples that come with the [tinyusb stack](https://github.com/hathach/tinyusb),
+please look at the USB Host [msc_file_explorer](https://github.com/hathach/tinyusb/tree/master/examples/host/msc_file_explorer)
+example. It appears to be a more generic adaptation of this code.
+
 # Build Instructions
 As of this writing, USB host bulk transfers that the Mass Storage
 Class requires are not supported for RP2040 in the version of
