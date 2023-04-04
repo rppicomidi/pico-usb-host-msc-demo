@@ -15,6 +15,10 @@ If you prefer to use the examples that come with the [tinyusb stack](https://git
 please look at the USB Host [msc_file_explorer](https://github.com/hathach/tinyusb/tree/master/examples/host/msc_file_explorer)
 example. It appears to be a more generic adaptation of this code.
 
+If you want to use the built-in USB hardware for something else but
+still want a MSC USB host port, checkout the `pio-usb` branch of this
+project and follow the `README.md` instructions from that branch instead.
+
 # Build Instructions
 As of this writing, USB host bulk transfers that the Mass Storage
 Class requires are not supported for RP2040 in the version of
