@@ -148,11 +148,12 @@ void tuh_msc_mount_cb(uint8_t dev_addr)
     char path[3] = "0:";
     path[0] += pdrv;
     if ( f_mount(&fatfs[pdrv],path, 0) != FR_OK ) {
-        printf("mount failed\r\n");
+        printf("mount drive %s failed\r\n", path);
         return;
-        if (f_chdrive(path) != FR_OK) {
-            printf("f_chdrive(%s) failed\r\n", path);
-        }
+    }
+    if (f_chdrive(path) != FR_OK) {
+        printf("f_chdrive(%s) failed\r\n", path);
+        return;
     }
     printf("\r\nMass Storage drive %u is mounted\r\n", pdrv);
     printf("Run the set-date and set-time commands so file timestamps are correct\r\n\r\n");
