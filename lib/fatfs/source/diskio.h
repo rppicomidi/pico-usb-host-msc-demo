@@ -130,8 +130,7 @@ void msc_fat_wait_transfer_complete();
  * @brief callback when the current pending MSC transfer is complete
  * 
  * @param dev_addr the address of the attached MSC device
- * @param cbw the command block wrapper structure
- * @param csw the command status wrapper structure
+ * @param cb_data a pointer to the data used by the callback
  * @return true if transfer was successful
  * @return false if the transfer failed or there was a phase error
  */
