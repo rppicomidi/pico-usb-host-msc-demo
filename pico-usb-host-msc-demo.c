@@ -31,7 +31,13 @@
 #include <string.h>
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
+#if CFG_TUH_RPI_PIO_USB
+#include "pico/multicore.h"
+#include "pico/bootrom.h"
+#include "pio_usb.h"
+#else
 #include "bsp/board.h"
+#endif
 #include "tusb.h"
 #include "class/msc/msc_host.h"
 #include "ff.h"
@@ -76,12 +82,32 @@ static void blink_led(void)
 
 void main_loop_task()
 {
+#if !defined(CFG_TUH_RPI_PIO_USB) || (CFG_TUH_RPI_PIO_USB == 0)
     tuh_task();
-
+#endif
     msc_demo_cli_task();
 
     blink_led();
 }
+
+#if CFG_TUH_RPI_PIO_USB
+// core1: handle host events
+static bool core1_booting = true;
+void core1_main() {
+    sleep_ms(10);
+    // Use tuh_configure() to pass pio configuration to the host stack
+    // Note: tuh_configure() must be called before
+    pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+    tuh_configure(1, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);
+    // To run USB SOF interrupt in core1, init host stack for pio_usb (roothub
+    // port1) on core1
+    tuh_init(1);
+    core1_booting = false;
+    while (true) {
+        tuh_task(); // tinyusb host task
+    }
+}
+#endif
 
 int main()
 {
@@ -89,12 +115,25 @@ int main()
     bi_decl(bi_program_description("Provide a USB host interface for FATFS formatted USB drives."));
     bi_decl(bi_1pin_with_name(LED_GPIO, "On-board LED"));
 
-    board_init();
-    printf("Pico USB Host Mass Storage Class Demo\r\n");
+#if !defined(CFG_TUH_RPI_PIO_USB) || (CFG_TUH_RPI_PIO_USB == 0)
+    stdio_init_all();
+
     tusb_init();
+#else
+    sleep_ms(10);
+
+    stdio_init_all();
+    // all USB Host task run in core1
+    multicore_reset_core1();
+    multicore_launch_core1(core1_main);
+#endif
+    printf("Pico USB Host Mass Storage Class Demo\r\n");
 
     // Map the pins to functions
 #ifdef RPPICOMIDI_PICO_W
+    // wait for core 1 to finish claiming PIO state machines and DMA
+    while(core1_booting) {
+    }
     if (cyw43_arch_init()) {
         printf("WiFi init failed");
         return -1;
