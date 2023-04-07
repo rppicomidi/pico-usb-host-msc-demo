@@ -131,9 +131,11 @@ int main()
 
     // Map the pins to functions
 #ifdef RPPICOMIDI_PICO_W
+#if defined(CFG_TUH_RPI_PIO_USB) && (CFG_TUH_RPI_PIO_USB == 1)
     // wait for core 1 to finish claiming PIO state machines and DMA
     while(core1_booting) {
     }
+#endif
     if (cyw43_arch_init()) {
         printf("WiFi init failed");
         return -1;
