@@ -92,7 +92,8 @@ void main_loop_task()
 
 #if CFG_TUH_RPI_PIO_USB
 // core1: handle host events
-static bool core1_booting = true;
+static volatile bool core1_booting = true;
+static volatile bool core0_booting = true;
 void core1_main() {
     sleep_ms(10);
     // Use tuh_configure() to pass pio configuration to the host stack
@@ -103,6 +104,8 @@ void core1_main() {
     // port1) on core1
     tuh_init(1);
     core1_booting = false;
+    while(core0_booting) {
+    }
     while (true) {
         tuh_task(); // tinyusb host task
     }
@@ -146,6 +149,9 @@ int main()
 #endif
     msc_fat_init();
     msc_demo_cli_init();
+#if defined(CFG_TUH_RPI_PIO_USB) && (CFG_TUH_RPI_PIO_USB == 1)
+    core0_booting = false;
+#endif
     while (1) {
         main_loop_task();
     }
