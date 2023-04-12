@@ -21,6 +21,19 @@ If you prefer to use the examples that come with the [tinyusb stack](https://git
 please look at the USB Host [msc_file_explorer](https://github.com/hathach/tinyusb/tree/master/examples/host/msc_file_explorer)
 example. It appears to be a more generic adaptation of this code.
 
+# Flash drive compatibility and performance
+I have tested this code to work with a 32 GB USB 3.0 flash drive. Theoretically,
+the Elm-Chan FatFS file system supports larger ExFAT formatted drives, and
+the USB MSC class should work with any MSC device type and not just flash drives, but
+I have not tested it.
+
+The RP2040's native USB hardware transfer rate maxes out at USB Full Speed (12Mbps).
+Furthermore, it is not designed to be high performance in host
+mode. Expect a transfer limit of a bit less than 64Kbytes/second. The `Pico-PIO-USB`
+USB host has a different design; I have not computed its performance.
+If you are primarily reading and writing limited numbers of small files,
+the performance is probably fine. If you plan to stream audio or video, it is probably not.
+
 # Environment variable configurations
 Please set up the following environment variables before you
 start the build.
@@ -47,12 +60,15 @@ git pull
 ```
 If you have set environment variable `RPPICOMIDI_PIO_HOST` to 1 so you can
 use the PIO port for the USB Host, you need to install the latest version of the
-`Pico-PIO-USB` project where tinyusb can find it.
--```
--cd ${PICO_SDK_PATH}/lib/tinyusb/hw/mcu/raspberry_pi/
--git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git
--```
+`Pico-PIO-USB` project where tinyusb can find it. Do not use my fork of
+`Pico-PIO-USB` because I only created that to push the fix required to
+allow this project to coexist with the Pico W driver code. It is likely
+the main project has advanced beyond that pull request.
 
+```
+cd ${PICO_SDK_PATH}/lib/tinyusb/hw/mcu/raspberry_pi/
+git clone https://github.com/sekigon-gonnoc/Pico-PIO-USB.git
+```
 
 Get this project's source code assuming the parent directory is called
 `${PROJECTS}`.
@@ -72,12 +88,17 @@ to point to your `pico-sdk` directory
 cd ${PROJECTS}/pico-usb-host-msc-demo
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 make
 ```
 If you are using a Pico W board, you may see some unused parameter warnings
 in the cyw43_arch_threadsafe_background.c file. You can safely ignore these.
 The demo code is only using the `cyw43_arch` API to blink the LED.
+
+I tend to do my testing in debug mode, so I show using the `Debug` build
+type in the instructions. If you use some other build type and you
+encounter problems during testing, please file an issue and I will try
+to address it.
 
 # Hardware hookup
 ## If you are using the RP2040 USB hardware for the USB Host
