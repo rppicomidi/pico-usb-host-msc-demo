@@ -47,7 +47,12 @@ hardware for the USB Host. If you are using RP2040 PIO to add a USB host port,
 set this variable in your environment to 1.
 
 # Build Instructions
-As of this writing, USB host bulk transfers that the Mass Storage
+USB host bulk transfers are a relatively recent addition to the
+tinyusb library. If you are using Pico SDK 2.0 or later, they
+are supported.
+
+If you are using an older version of the Pico SDK,
+USB host bulk transfers that the Mass Storage
 Class requires are not supported for RP2040 in the version of
 tinyusb that ships with the pico-sdk. You need the very latest
 version of tinyusb to get that. This assumes `${PICO_SDK_PATH}`
@@ -117,8 +122,8 @@ I used a USB A female breakout board for the USB Host connector. I
 cut the D+ and D- minus traces and scraped back enough solder mask
 to solder in two 0603 27 ohm 1% metal film resistors in line with
 the D+ and D- signals. I wired the D+ signal post resistor to Pico
-board pin 1, and I wired the D- signal post resistor to Pico board
-Pin 2. I wired the +5V of the breakout board to the Pico Vbus pin 40.
+board pin 21, and I wired the D- signal post resistor to Pico board
+Pin 22. I wired the +5V of the breakout board to the Pico Vbus pin 40.
 I wired the GND of the breakout board to Pico GND pin 3.
 
 There is a [photo](https://github.com/rppicomidi/pico-usb-midi-processor/blob/main/doc/PUMP_USB_A.JPG) of ugly but functional USB A breakout wiring
@@ -127,9 +132,7 @@ in the `Wiring the USB Host port` section of the `README.md` file in the
 project.
 
 You need a console UART so that you can use the command line interpreter.
-Normally, Pins 1 and 2 of the Pico board are used for the debug UART.
-However, the `Pico-PIO-USB` library defaults to using those pins, so
-I moved them in the `CMakeLists.txt` file to pins 21 (UART TX) and 22 (UART RX).
+The default Pins 1 and 2 of the Pico board are used for the debug UART.
 
 # Usage
 Hook up the hardware and start a terminal program. Get the code into

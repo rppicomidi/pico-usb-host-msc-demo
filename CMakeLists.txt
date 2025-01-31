@@ -59,11 +59,8 @@ target_link_options(${target} PRIVATE -Xlinker --print-memory-usage)
 target_compile_options(${target} PRIVATE -Wall -Wextra)
 if(DEFINED RPPICOMIDI_PIO_HOST AND (RPPICOMIDI_PIO_HOST EQUAL 1))
 target_compile_definitions(${target} PRIVATE
-    PICO_DEFAULT_UART_TX_PIN=16
-    PICO_DEFAULT_UART_RX_PIN=17
     CFG_TUH_RPI_PIO_USB=1
     BOARD_TUH_RHPORT=1
-    CYW43_SPI_PIO_PREFERRED_PIO=0
 )
 endif()
 target_link_libraries(${target} tinyusb_host tinyusb_board rp2040_rtc msc_fatfs pico_stdlib)
