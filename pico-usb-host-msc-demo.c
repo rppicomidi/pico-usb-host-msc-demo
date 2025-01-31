@@ -35,6 +35,7 @@
 #include "pico/multicore.h"
 #include "pico/bootrom.h"
 #include "pio_usb.h"
+#include "hardware/clocks.h"
 #else
 #include "bsp/board.h"
 #endif
@@ -99,6 +100,7 @@ void core1_main() {
     // Use tuh_configure() to pass pio configuration to the host stack
     // Note: tuh_configure() must be called before
     pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
+    pio_cfg.pin_dp = 16;
     tuh_configure(1, TUH_CFGID_RPI_PIO_USB_CONFIGURATION, &pio_cfg);
     // To run USB SOF interrupt in core1, init host stack for pio_usb (roothub
     // port1) on core1
@@ -123,22 +125,23 @@ int main()
 
     tusb_init();
 #else
+    set_sys_clock_khz(120000, true);
     sleep_ms(10);
 
-    stdio_init_all();
+    stdio_uart_init();
     // all USB Host task run in core1
     multicore_reset_core1();
     multicore_launch_core1(core1_main);
 #endif
     printf("Pico USB Host Mass Storage Class Demo\r\n");
 
-    // Map the pins to functions
-#ifdef RPPICOMIDI_PICO_W
 #if defined(CFG_TUH_RPI_PIO_USB) && (CFG_TUH_RPI_PIO_USB == 1)
     // wait for core 1 to finish claiming PIO state machines and DMA
     while(core1_booting) {
     }
 #endif
+    // Map the pins to functions
+#ifdef RPPICOMIDI_PICO_W
     if (cyw43_arch_init()) {
         printf("WiFi init failed");
         return -1;
