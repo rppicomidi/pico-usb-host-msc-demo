@@ -25,12 +25,6 @@
  * SOFTWARE.
  * 
  */
-#ifdef NDEBUG
-// Fix issue 1: Need to do this here for release builds or no CLI commands will be added
-// All build variants except DEBUG define NDEBUG, which makes assert() macro generate
-// no code at all, which prevents msc_demo_cli_init() from adding any CLI commands.
-#undef NDEBUG
-#endif
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -452,127 +446,127 @@ void msc_demo_cli_init()
     cli = embeddedCliNew(&demo_config);
     cli->onCommand = onCommandFn;
     cli->writeChar = writeCharFn;
-
-    assert(embeddedCliAddBinding(cli, {
+    bool result = embeddedCliAddBinding(cli, {
             "cat",
             "print the specified file; usage cat filename",
             true,
             NULL,
             on_cat
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "cd",
             "change the current working directory; usage cd <new path>",
             true,
             NULL,
             on_cd
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "chdrive",
             "change the current drive number; usage chdrive drive_number(0-3)",
             true,
             NULL,
             on_chdrive
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "cp",
             "copy an unopened file to a different unopened file; usage cp old_file new_file",
             true,
             NULL,
             on_cp
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "get-date",
             "get the date for file timestamps; usage get-date",
             false,
             NULL,
             on_get_date
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "get-fattime",
             "get the date and time for file timestamps; usage get-fattime",
             false,
             NULL,
             on_get_fat_time
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "get-free",
             "get drive free space",
             false,
             NULL,
             on_get_free
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "get-time",
             "get the time of day for file timestamps; usage get-time",
             false,
             NULL,
             on_get_time
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "ls",
             "list current directory; usage ls",
             false,
             NULL,
             on_ls
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "mkdir",
             "create a new directory; usage mkdir new_directory_name",
             true,
             NULL,
             on_mkdir
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "mv",
             "rename an unopened file or an unopened, empty directory; usage mv old_name new_name",
             true,
             NULL,
             on_mv
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "pwd",
             "print the current working directory; usage pwd",
             false,
             NULL,
             on_pwd
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "rm",
             "delete an unopened file or an unopened, empty directory; usage rm name",
             true,
             NULL,
             on_rm
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "set-date",
             "change the date for file timestamps; usage set-date year(2022-9999) month(1-12) day(1-31)",
             true,
             NULL,
             on_set_date
-    }));
-
-    assert(embeddedCliAddBinding(cli, {
+    });
+    assert(result);
+    result = embeddedCliAddBinding(cli, {
             "set-time",
             "change the time of day for file timestamps; usage set-time hour(0-23) minute(0-59) second(0-59)",
             true,
             NULL,
             on_set_time
-    }));
-
+    });
+    assert(result);
+    (void)result;
     // flush out junk from the keyboard buffer
     int c;
     do {
