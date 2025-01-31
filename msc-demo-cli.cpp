@@ -447,6 +447,7 @@ void msc_demo_cli_init()
     demo_config.cliBufferSize = 0;
     demo_config.maxBindingCount = 16;
     demo_config.enableAutoComplete = true;
+    demo_config.invitation = "> ";
 
     cli = embeddedCliNew(&demo_config);
     cli->onCommand = onCommandFn;
