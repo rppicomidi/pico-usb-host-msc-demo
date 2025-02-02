@@ -61,6 +61,16 @@ target_compile_definitions(pico_usb_host_msc_demo PRIVATE
     CFG_TUH_RPI_PIO_USB=1
     BOARD_TUH_RHPORT=1
 )
+if((${PICO_BOARD} MATCHES "pico_w") OR (${PICO_BOARD} MATCHES "pico"))
+    target_compile_definitions(pico_usb_host_msc_demo PRIVATE
+        PICO_DEFAULT_PIO_USB_DP_PIN=16
+    )
+elseif(${PICO_BOARD} MATCHES "adafruit_feather_rp2040_usb_host")
+    target_compile_definitions(pico_usb_host_msc_demo PRIVATE
+        USE_ADAFRUIT_FEATHER_RP2040_USBHOST=1
+    )
+endif()
+
 endif()
 target_link_libraries(pico_usb_host_msc_demo tinyusb_host tinyusb_board rp2040_rtc msc_fatfs pico_stdlib)
 if(DEFINED RPPICOMIDI_PIO_HOST AND (RPPICOMIDI_PIO_HOST EQUAL 1))
@@ -69,7 +79,9 @@ endif()
 if(DEFINED PICO_BOARD)
     if(${PICO_BOARD} MATCHES "pico_w")
         message("board is pico_w")
-        target_compile_options(pico_usb_host_msc_demo PRIVATE -DRPPICOMIDI_PICO_W)
+        target_compile_definitions(pico_usb_host_msc_demo PRIVATE 
+            RPPICOMIDI_PICO_W=1
+        )
         target_link_libraries(pico_usb_host_msc_demo pico_cyw43_arch_none)
     else()
         message("board is pico")

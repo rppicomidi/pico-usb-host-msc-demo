@@ -3,10 +3,13 @@ A CLI-driven demo of a Raspberry Pi Pico operating as a USB Mass Storage Class H
 
 This demo supports up to 4 USB flash drives connected through a
 hub to the RP2040 USB hardware or to a USB host port constructed
-from the RP2040's PIO hardware + 2 GPIO pins. The demo can run on
-a Pico or Pico W board. The demo uses a terminal-based command
-line interpreter to access the drives. It supports only one
-logical unit per drive. Drives are identified by drive number,
+from the RP2040's PIO hardware + 2 GPIO pins. The demo has been tested on
+a Pico board, a Pico W board and an Adafruit Feather RP2040 with USB A Host.
+It should run on any RP2040 or RP2350 based board provided that the USB
+Host is wired properly.
+
+The demo uses a terminal-based command line interpreter to access the drives.
+It supports only one logical unit per drive. Drives are identified by drive number,
 0-3.
 
 This project uses the pico-sdk, the very latest tinyusb library,
@@ -41,7 +44,9 @@ start the build.
 - `PICO_SDK_PATH` must point to the directory in the filesystem where
 you installed the `pico-sdk`
 - `PICO_BOARD` If you are using a Pico W board instead of a Pico board, you need
-to set the environment variable `PICO_BOARD` to `pico_w`. Otherwise, leave it unset.
+to set the environment variable `PICO_BOARD` to `pico_w`. Set it to `adafruit_feather_rp2040_usb_host`
+if you are using the [Adafruit Feather RP2040 with USB A Host](https://learn.adafruit.com/adafruit-feather-rp2040-with-usb-type-a-host).
+Otherwise, leave it unset.
 - `RPPICOMIDI_PIO_HOST` should be undefined if you are using the RP2040 native USB
 hardware for the USB Host. If you are using RP2040 PIO to add a USB host port,
 set this variable in your environment to 1.
@@ -112,6 +117,9 @@ board so you can use the command line interpreter. You will need a
 microUSB to USB A female adapter to interface with most USB flash
 drives. You will also need to provide 5V to the Vbus pin so the Pico
 board will boot and to power the USB flash drive.
+
+If you are using the Adafruit Feather board, the UART pins and ground
+pin are labeled on the board itself.
 
 I use a Picoprobe board hooked to a computer to provide the UART
 terminal interface and to provide the 5V to VBus (I just hook the
